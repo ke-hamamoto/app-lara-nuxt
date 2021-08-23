@@ -1,15 +1,17 @@
 version: "3.7"
 services:
-  
+
   workspace:
     build:
       context: .
       dockerfile: ./docker/php-fpm/Dockerfile
-    container_name: workspce
+    container_name: workspace
     ports:
       - 80:3000
     volumes:
       - ${APP_CODE_PATH_HOST}:/var/www/html/
+    networks:
+      - app_network
 
   php-fpm:
     build:
@@ -20,6 +22,9 @@ services:
       - 9000:9000
     volumes:
       - ${APP_CODE_PATH_HOST}:/var/www/html/
+      - ${WSL_ROOT_LARA}/docker/php-fpm/php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - app_network
 
   nginx:
     image: nginx:alpine
@@ -28,13 +33,23 @@ services:
       - php-fpm
     ports:
       - ${NGINX_PORT}:80
+    environment:
+      - SSR_BASE_ORIGIN=${SSR_BASE_ORIGIN}
+      - CLIENT_BASE_ORIGIN=${CLIENT_BASE_ORIGIN}
     volumes:
       - ${APP_CODE_PATH_HOST}:/var/www/html/
+      - ${WSL_ROOT_LARA}/docker/nginx/timezone:/etc/timezone
       - ${WSL_ROOT_LARA}/docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ${WSL_ROOT_LARA}/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      # default.confでの環境変数対策
+      - ${WSL_ROOT_LARA}/docker/nginx/default.conf.template:/etc/nginx/conf.d/default.conf.template
+      # - ${WSL_ROOT_LARA}/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    command: /bin/sh -c "envsubst '$$CLIENT_BASE_ORIGIN $$SSR_BASE_ORIGIN' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    networks:
+      - app_network
+
 
   # コンテナ名がPDO接続先のHOSTになる
-  mysql: 
+  mysql:
     image: mysql:5.7
     container_name: mysql
     init: true
@@ -42,28 +57,33 @@ services:
       - php-fpm
     ports:
       - 3306:3306
-    volumes: 
+    volumes:
       # - ${MYSQL_PATH_INIT}:/docker-entrypoint-initdb.d
       # - ${MYSQL_PATH_MYCONF}:/etc/mysql/my.cnf
       - ${MYSQL_PATH_DATA}:/var/lib/mysql
-    environment: 
+    environment:
       - MYSQL_DATABASE=my_app
       - MYSQL_USER=root
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - app_network
 
-  myadmin: 
+  myadmin:
     image: phpmyadmin/phpmyadmin
     container_name: myadmin
     init: true
-    environment: 
+    environment:
       - PMA_HOST=mysql
 #      - VIRTUAL_HOST=admin.gestem.keham
-    ports: 
+    ports:
       - '9096:80'
 
-  mailhog:
-    image: mailhog/mailhog
-    container_name: mailhog
-    ports:
-      - 1025:1025
-      - 8025:8025
+  # mailhog:
+  #   image: mailhog/mailhog
+  #   container_name: mailhog
+  #   ports:
+  #     - 1025:1025
+  #     - 8025:8025
+
+networks:
+  app_network:

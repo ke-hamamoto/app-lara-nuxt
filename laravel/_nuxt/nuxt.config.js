@@ -2,7 +2,8 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   server: {
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    port: 3000
   },
   srcDir: 'app/',
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -47,7 +48,15 @@ export default {
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    proxy: true,
+    // baseURL: 'http://localhost:8080/api/',
+  },
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8080',
+    },
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -76,4 +85,7 @@ export default {
       ]
     }
   },
+  plugins: [
+    '@/plugins/axios-conf',
+  ]
 }

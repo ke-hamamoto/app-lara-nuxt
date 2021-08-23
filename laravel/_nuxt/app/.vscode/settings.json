@@ -1,0 +1,69 @@
+{
+  "editor.minimap.enabled": false,
+  "editor.multiCursorPaste": "full",
+  "workbench.startupEditor": "newUntitledFile",
+  "editor.renderWhitespace": "all",
+  "editor.tokenColorCustomizations": null,
+  "editor.codeActionsOnSave": null,
+  "editor.formatOnType": true,
+  "html.format.wrapLineLength": 0,
+  "workbench.colorCustomizations": {
+    "editorCursor.foreground": "#fff"
+  },
+  "workbench.iconTheme": "vscode-icons",
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "editor.trimAutoWhitespace": false,
+  "files.trimTrailingWhitespace": true,
+  "editor.detectIndentation": false,
+  "prettier.disableLanguages": [
+    "javascript",
+    "css",
+    "html",
+    "sass",
+    "scss"
+  ],
+  "eslint.options": {
+    "extensions": [
+      ".vue"
+    ]
+  },
+  "eslint.validate": [
+    {
+      "autoFix": true,
+      "language": "vue"
+    }
+  ],
+  "beautify.onSave": true,
+  "beautify.JSfiles": [
+    "js"
+  ],
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  //Nuxtの時veturのフォーマッターは不要
+  "[vue]": {
+    "editor.defaultFormatter": "octref.vetur"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "michelemelluso.code-beautifier"
+  },
+  "editor.wordWrap": "on",
+  "editor.formatOnPaste": true,
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  // "[vue]": {
+  //   "editor.defaultFormatter": "esbenp.prettier-vscode"
+  // },
+  "beautify.config": "",
+  "editor.formatOnSave": true,
+  "window.zoomLevel": 0,
+  "security.workspace.trust.untrustedFiles": "open"
+}
