@@ -77,6 +77,8 @@ services:
 #      - VIRTUAL_HOST=admin.gestem.keham
     ports:
       - '9096:80'
+    networks:
+      - app_network
 
   # mailhog:
   #   image: mailhog/mailhog
@@ -84,6 +86,8 @@ services:
   #   ports:
   #     - 1025:1025
   #     - 8025:8025
+  #   networks:
+  #     - app_network
 
 networks:
   app_network:
