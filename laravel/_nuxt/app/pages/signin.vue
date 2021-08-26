@@ -5,8 +5,8 @@
         <v-card>
           <v-card-title class="">サインイン</v-card-title>
           <v-card-text>
-            <v-text-field label="メールアドレス"></v-text-field
-          ></v-card-text>
+            <FormEmail :prpForm="prpForm" :prpVali="prpVali" />
+          </v-card-text>
           <v-card-text>
             <v-text-field label="パスワード"></v-text-field>
           </v-card-text>
@@ -23,27 +23,41 @@
   </v-row>
 </template>
 <script>
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
+import { required, email, maxLength } from "vuelidate/lib/validators";
+import FormEmail from "~/components/form/form-email.vue";
 export default {
+  components: { FormEmail },
   async asyncData({ $axios }) {
-    const $axios8080 = $axios
+    const $axios8080 = $axios;
     $axios8080.defaults.baseURL = process.client
-      ? 'http://localhost:8080'
-      : 'http://nginx:80'
-    const testapi = await $axios8080.$get('/api/test').then(
+      ? "http://localhost:8080"
+      : "http://nginx:80";
+    const testapi = await $axios8080.$get("/api/test").then(
       (data) => {
-        return data
+        return data;
       },
       (err) => {
-        console.log(err)
+        console.log(err);
       }
-    )
-    return { testapi }
+    );
+    return { testapi };
   },
   data() {
-    return {}
+    return {
+      prpForm: { label: "メールアドレス", maxLen: 32 },
+      prpVali: null,
+    };
   },
-  async created() {
-    console.log(this.testapi)
+  computed: {},
+  methods: {},
+  created() {
+    this.prpVali = {
+      email,
+      required,
+      maxLength: maxLength(this.prpForm.maxLen),
+    };
+    console.log(this.testapi);
   },
-}
+};
 </script>

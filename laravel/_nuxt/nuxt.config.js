@@ -87,5 +87,6 @@ export default {
   },
   plugins: [
     '@/plugins/axios-conf',
+    "@/plugins/vuelidate.js"
   ]
 }
