@@ -58,21 +58,21 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Signin',
-          to: '/signin',
+          icon: "mdi-apps",
+          title: "Signin",
+          to: "/signin",
         },
         {
-          icon: 'mdi-apps',
-          title: 'Register',
-          to: '/register',
+          icon: "mdi-apps",
+          title: "Signup",
+          to: "/signup",
         },
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'message-app',
-    }
+      title: "message-app",
+    };
   },
-}
+};
 </script>

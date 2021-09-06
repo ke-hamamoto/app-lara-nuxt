@@ -14,13 +14,14 @@
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 export default {
+  //関数形式にするとthisが使える
   validations() {
     return { mydata: this.prpVali };
   },
   async asyncData({ $axios }) {
     return {};
   },
-  props: ["prpForm", "prpVali"],
+  props: ["cmpName", "prpForm", "prpVali"],
   data() {
     return {
       mydata: "",
@@ -28,16 +29,38 @@ export default {
   },
   computed: {},
   methods: {
+    ...mapMutations("app-utils", ["$updateAppState"]),
     errorsMes() {
       const errors = [];
       if (!this.$v.mydata.$dirty) return errors;
-      !this.$v.mydata.email && errors.push("メール形式でお願いします。");
-      !this.$v.mydata.maxLength && errors.push("文字数オーバー");
-      !this.$v.mydata.required && errors.push("Form is required!!");
+
+      for (let key of Object.keys(this.$v.mydata)) {
+        if (key == "email") {
+          !this.$v.mydata[key] && errors.push("メール形式でお願いします。");
+        } else if (key == "maxLength") {
+          !this.$v.mydata[key] && errors.push("文字数オーバー");
+        } else if (key == "required") {
+          !this.$v.mydata[key] && errors.push("Form is required!!");
+        }
+      }
       return errors;
     },
-    mychange() {},
+    mychange() {
+      this.$updateAppState({
+        stateName: "$forms",
+        keys: [this.cmpName, "mydata"],
+        newData: this.mydata,
+      });
+    },
   },
-  created() {},
+  created() {
+    if (process.client) {
+      this.$updateAppState({
+        stateName: "$forms",
+        keys: [this.cmpName],
+        newData: { mydata: this.$v.mydata.$model },
+      });
+    }
+  },
 };
 </script>

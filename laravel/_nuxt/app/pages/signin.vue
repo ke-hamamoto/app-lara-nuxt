@@ -5,17 +5,21 @@
         <v-card>
           <v-card-title class="">サインイン</v-card-title>
           <v-card-text>
-            <FormEmail :prpForm="prpForm" :prpVali="prpVali" />
+            <FormEmail
+              cmpName="email"
+              :prpForm="prpForm1"
+              :prpVali="prpVali1"
+            />
           </v-card-text>
           <v-card-text>
-            <v-text-field label="パスワード"></v-text-field>
+            <FormEmail cmpName="pass" :prpForm="prpForm2" :prpVali="prpVali2" />
           </v-card-text>
           <v-card-text class="justify-center">
-            <v-btn color="primary" nuxt to="/"> 確認 </v-btn>
+            <v-btn color="primary" @click="mysubmit()"> 確認 </v-btn>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" nuxt to="/register"> ユーザー登録 </v-btn>
+            <v-btn color="primary" nuxt to="/signup"> ユーザー登録 </v-btn>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -33,6 +37,7 @@ export default {
     $axios8080.defaults.baseURL = process.client
       ? "http://localhost:8080"
       : "http://nginx:80";
+
     const testapi = await $axios8080.$get("/api/test").then(
       (data) => {
         return data;
@@ -45,19 +50,42 @@ export default {
   },
   data() {
     return {
-      prpForm: { label: "メールアドレス", maxLen: 32 },
-      prpVali: null,
+      prpForm1: { label: "メールアドレス", maxLen: 32 },
+      prpForm2: { label: "パスワード", maxLen: 32 },
+      prpVali1: null,
+      prpVali2: null,
     };
   },
-  computed: {},
-  methods: {},
+  computed: {
+    ...mapGetters("auth", ["isLogin"]),
+    ...mapState("app-utils", ["$forms"]),
+  },
+  methods: {
+    ...mapActions("auth", ["login"]),
+    ...mapActions("init", ["nuxtServerInit"]),
+    async mysubmit() {
+      const submitData = new FormData();
+      submitData.append("email", this.$forms["email"].mydata);
+      submitData.append("password", this.$forms["pass"].mydata);
+      await this.login(submitData);
+      await this.nuxtServerInit();
+      if (this.isLogin) {
+        this.$router.push("/mypage");
+      }
+    },
+  },
   created() {
-    this.prpVali = {
+    this.prpVali1 = {
       email,
       required,
-      maxLength: maxLength(this.prpForm.maxLen),
+      maxLength: maxLength(this.prpForm1.maxLen),
+    };
+    this.prpVali2 = {
+      required,
+      maxLength: maxLength(this.prpForm2.maxLen),
     };
     console.log(this.testapi);
   },
+  mounted() {},
 };
 </script>

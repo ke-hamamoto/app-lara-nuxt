@@ -4,7 +4,11 @@ import $axios from 'axios'
 Vue.prototype.$axios_conf = [];
 
 const conf8080 = {
-  baseURL: process.env.NODE_ENV !== "production" ? 'http://localhost:8080' : 'http://localhost:8080',
+  // baseURL: process.env.NODE_ENV !== "production" ? 'http://localhost:8080' : 'http://localhost:8080',
+  baseURL: process.client
+    ? "http://localhost:8080"
+    : "http://nginx:80",
+  withCredentials: true,
   timeout: 300000
 }
 const ins8080 = $axios.create(conf8080);
