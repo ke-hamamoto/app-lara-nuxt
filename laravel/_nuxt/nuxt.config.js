@@ -87,6 +87,8 @@ export default {
   },
   plugins: [
     '@/plugins/axios-conf',
-    "@/plugins/vuelidate.js"
+    "@/plugins/util-json",
+    "@/plugins/vuelidate.js",
+    '@/plugins/prop-cmp',
   ]
 }

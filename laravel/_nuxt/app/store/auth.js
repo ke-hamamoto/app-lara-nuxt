@@ -33,14 +33,24 @@ export const mutations = {
 }
 
 export const actions = {
-  async login({ commit, dispatch }, submitData) {
+  async $login({ commit, dispatch }, submitData) {
     const $axios8080 = Vue.prototype.$axios8080;
     await $axios8080
       .post('/api/login', submitData)
-      .then((response) => {
-        console.log(response);
+      .then(({ data }) => {
         commit('clearStatus')
-        commit('setUser', response)
+        commit('setUser', data)
+      })
+      .catch((err) => {
+        dispatch('errorHandler', err)
+      })
+  },
+  async $logout({ commit, dispatch }) {
+    const $axios8080 = Vue.prototype.$axios8080;
+    await $axios8080
+      .post('/api/logout')
+      .then(() => {
+        commit('setUser', null)
       })
       .catch((err) => {
         dispatch('errorHandler', err)
@@ -52,5 +62,4 @@ export const actions = {
       messages: err.response.data.errors,
     })
   },
-
 }

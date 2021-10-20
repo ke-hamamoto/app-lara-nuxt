@@ -1,7 +1,17 @@
 <template>
   <v-text-field
     v-model="$v.mydata.$model"
+    :type="
+      prpForm.type == 'password'
+        ? flgShow
+          ? 'text'
+          : prpForm.type
+        : prpForm.type
+    "
     :label="prpForm.label"
+    :append-icon="
+      prpForm.type == 'password' ? (flgShow ? 'mdi-eye' : 'mdi-eye-off') : ''
+    "
     :error-messages="errorsMes()"
     @input="
       $v.mydata.$touch();
@@ -9,6 +19,7 @@
     "
     :counter="prpForm.maxLen"
     @blur="$v.mydata.$touch()"
+    @click:append="flgShow = !flgShow"
   ></v-text-field>
 </template>
 <script>
@@ -21,15 +32,16 @@ export default {
   async asyncData({ $axios }) {
     return {};
   },
-  props: ["cmpName", "prpForm", "prpVali"],
+  props: ["cmpObj", "prpForm", "prpVali"],
   data() {
     return {
       mydata: "",
+      flgShow: false,
     };
   },
   computed: {},
   methods: {
-    ...mapMutations("app-utils", ["$updateAppState"]),
+    ...mapMutations("app-utils", ["$initAppState", "$updateAppState"]),
     errorsMes() {
       const errors = [];
       if (!this.$v.mydata.$dirty) return errors;
@@ -48,17 +60,26 @@ export default {
     mychange() {
       this.$updateAppState({
         stateName: "$forms",
-        keys: [this.cmpName, "mydata"],
+        keys: [this.$genCmpKey(this.cmpObj), "mydata"],
         newData: this.mydata,
+      });
+    },
+    formClear() {
+      this.$v.$reset();
+      this.mydata = "";
+      this.$updateAppState({
+        stateName: "$forms",
+        keys: [this.$genCmpKey(this.cmpObj), "mydata"],
+        newData: "",
       });
     },
   },
   created() {
     if (process.client) {
-      this.$updateAppState({
+      this.$initAppState({
         stateName: "$forms",
-        keys: [this.cmpName],
-        newData: { mydata: this.$v.mydata.$model },
+        key: this.$genCmpKey(this.cmpObj),
+        newData: { mydata: this.$v.mydata.$model, formClear: this.formClear },
       });
     }
   },

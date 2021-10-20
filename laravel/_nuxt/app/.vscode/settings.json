@@ -64,6 +64,6 @@
   // },
   "beautify.config": "",
   "editor.formatOnSave": true,
-  "window.zoomLevel": 0,
+  "window.zoomLevel": 1,
   "security.workspace.trust.untrustedFiles": "open"
 }

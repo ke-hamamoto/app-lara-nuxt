@@ -24,10 +24,18 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title" />
+      <v-spacer />
+      <v-toolbar-items>
+        <v-layout align-center>
+          <BtnLogout />
+        </v-layout>
+      </v-toolbar-items>
     </v-app-bar>
+
     <v-main>
       <v-container>
         <Nuxt />
@@ -50,7 +58,10 @@
 </template>
 
 <script>
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
+import BtnLogout from "~/components/btn/logout";
 export default {
+  components: { BtnLogout },
   data() {
     return {
       clipped: false,
@@ -74,5 +85,53 @@ export default {
       title: "message-app",
     };
   },
+  computed: {
+    ...mapState("app-utils", ["$cmps"]),
+    ...mapGetters("auth", ["currentUser"]),
+  },
+  methods: {
+    ...mapMutations("app-utils", ["$initAppState", "$updateAppState"]),
+    updateItems() {
+      if (this.currentUser) {
+        this.items.shift();
+        this.items.unshift({
+          icon: "mdi-apps",
+          title: "Mypage",
+          to: "/mypage",
+        });
+        this.$updateAppState({
+          stateName: "$cmps",
+          keys: ["layout-app", "items"],
+          newData: this.items,
+        });
+      } else {
+        this.items.shift();
+        this.items.unshift({
+          icon: "mdi-apps",
+          title: "Signin",
+          to: "/signin",
+        });
+        this.$updateAppState({
+          stateName: "$cmps",
+          keys: ["layout-app", "items"],
+          newData: this.items,
+        });
+      }
+    },
+  },
+  created() {
+    if (process.client) {
+      let myobj = {};
+      myobj.items = this.items;
+      myobj.updateItems = this.updateItems;
+      this.$initAppState({
+        stateName: "$cmps",
+        key: "layout-app",
+        newData: myobj,
+      });
+      this.updateItems();
+    }
+  },
+  mounted() {},
 };
 </script>

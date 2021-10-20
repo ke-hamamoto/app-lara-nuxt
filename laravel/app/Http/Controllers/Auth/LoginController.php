@@ -7,6 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Models\User;  // 追加
+use Illuminate\Support\Facades\Auth;  // 追加
 
 class LoginController extends Controller
 {
@@ -48,7 +49,7 @@ class LoginController extends Controller
 
   protected function authenticated(Request $request, User $user)
   {
-    return $user;
+    return $user; // ユーザーを返すように変更
   }
 
   // 追加

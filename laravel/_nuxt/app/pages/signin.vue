@@ -5,14 +5,18 @@
         <v-card>
           <v-card-title class="">サインイン</v-card-title>
           <v-card-text>
-            <FormEmail
-              cmpName="email"
-              :prpForm="prpForm1"
-              :prpVali="prpVali1"
+            <FormText
+              :cmpObj="$genCmpObj({ name: `email` })"
+              :prpForm="prpForm.conf1"
+              :prpVali="prpVali.conf1"
             />
           </v-card-text>
           <v-card-text>
-            <FormEmail cmpName="pass" :prpForm="prpForm2" :prpVali="prpVali2" />
+            <FormText
+              :cmpObj="$genCmpObj({ name: `pass` })"
+              :prpForm="prpForm.conf2"
+              :prpVali="prpVali.conf2"
+            />
           </v-card-text>
           <v-card-text class="justify-center">
             <v-btn color="primary" @click="mysubmit()"> 確認 </v-btn>
@@ -29,9 +33,10 @@
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import { required, email, maxLength } from "vuelidate/lib/validators";
-import FormEmail from "~/components/form/form-email.vue";
+import FormText from "~/components/form/form-text.vue";
 export default {
-  components: { FormEmail },
+  components: { FormText },
+  middleware: ["loginCheck"],
   async asyncData({ $axios }) {
     const $axios8080 = $axios;
     $axios8080.defaults.baseURL = process.client
@@ -49,41 +54,45 @@ export default {
     return { testapi };
   },
   data() {
+    const confForm = { maxLen: 140 };
     return {
-      prpForm1: { label: "メールアドレス", maxLen: 32 },
-      prpForm2: { label: "パスワード", maxLen: 32 },
-      prpVali1: null,
-      prpVali2: null,
+      prpForm: {
+        conf1: {
+          type: "text",
+          label: "メールアドレス",
+          maxLen: confForm.maxLen,
+        },
+        conf2: {
+          type: "password",
+          label: "パスワード",
+          maxLen: confForm.maxLen,
+        },
+      },
+      prpVali: {
+        conf1: { email, required, maxLength: maxLength(confForm.maxLen) },
+        conf2: { required, maxLength: maxLength(confForm.maxLen) },
+      },
     };
   },
   computed: {
     ...mapGetters("auth", ["isLogin"]),
-    ...mapState("app-utils", ["$forms"]),
+    ...mapState("app-utils", ["$cmps", "$forms"]),
   },
   methods: {
-    ...mapActions("auth", ["login"]),
-    ...mapActions("init", ["nuxtServerInit"]),
+    ...mapActions("auth", ["$login"]),
     async mysubmit() {
       const submitData = new FormData();
+      console.log(this.$forms);
       submitData.append("email", this.$forms["email"].mydata);
       submitData.append("password", this.$forms["pass"].mydata);
-      await this.login(submitData);
-      await this.nuxtServerInit();
+      await this.$login(submitData);
       if (this.isLogin) {
+        this.$cmps["layout-app"].updateItems();
         this.$router.push("/mypage");
       }
     },
   },
   created() {
-    this.prpVali1 = {
-      email,
-      required,
-      maxLength: maxLength(this.prpForm1.maxLen),
-    };
-    this.prpVali2 = {
-      required,
-      maxLength: maxLength(this.prpForm2.maxLen),
-    };
     console.log(this.testapi);
   },
   mounted() {},

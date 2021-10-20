@@ -14,12 +14,9 @@ use Illuminate\Support\Facades\Auth;  // 追加
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//   return $request->user();
-// });
-
 // 追加
 // Route::group(["middleware" => ["api", "cors"]], function () {
+// Route::group(["middleware" => ["api"]], function () {
 Route::middleware([])->group(function () {
 
   Route::options('test', function () {
@@ -32,39 +29,30 @@ Route::middleware([])->group(function () {
   Route::options('/login', function () {
     return response()->json();
   });
+  Route::post('/login', 'Auth\LoginController@login')->name('login');
+
   Route::options('/current_user', function () {
     return response()->json();
   });
-  // Route::get('/current_user', function () {
-  //   return Auth::user();
-  // })->name('current_user');
-  // Route::namespace('Auth')->group(function () {
-  //   Route::post('/login', 'LoginController@login')->name('login');
-  // });
-  Route::post('/login', 'Auth\LoginController@login')->name('login');
   Route::get('/current_user', function () {
     // var_dump(Auth::user());
     return Auth::user();
   })->name('current_user');
+
+  Route::options('/get-comment', function () {
+    return response()->json();
+  });
+  Route::get('/get-comment', 'ArticleController@index')->name('get-comment');
+
+  Route::options('/add-comment', function () {
+    return response()->json();
+  });
+  Route::post('/add-comment', 'ArticleController@create')->name('add-comment');
 });
 
-// Route::middleware('api')->get('/test', function (Request $request) {
-//   return var_dump("test!!");
-// });
-
-// Route::group(['middleware' => ['api', 'cors']], function () {
-//   Route::options('sample', function () {
-//     return response()->json();
-//   });
-//   Route::resource('sample', 'Controllers\ArticlesController');
-// });
-
-// Route::middleware(['api','cors'])->group(function () {
-// Route::middleware(['api'])->group(function () {
-//   Route::options('test', function () {
-//     return response()->json();
-//   });
-//   Route::get("test", function () {
-//     return var_dump("test!!!!!");
-//   });
-// });
+Route::middleware('auth:api')->group(function () {
+  Route::options('/logout', function () {
+    return response()->json();
+  });
+  Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+});
